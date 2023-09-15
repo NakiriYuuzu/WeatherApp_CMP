@@ -12,7 +12,7 @@ fun MainViewController(): UIViewController {
 
     initKoin()
 
-    return PreComposeApplication(title = "") {
+    return PreComposeApplication {
         App(
             darkTheme = isDarkTheme,
             dynamicColor = false,

@@ -1,9 +1,9 @@
 object Deps {
     // remember same as gradle.properties
     object Version {
-        const val kotlin = "1.8.20"
-        const val gradle = "8.0.1"
-        const val compose = "1.4.0"
+        const val kotlin = "1.9.10"
+        const val gradle = "8.1.1"
+        const val compose = "1.5.10-beta01"
     }
 
     object Moko {
@@ -41,7 +41,7 @@ object Deps {
     }
 
     object Precompose {
-        private const val version = "1.4.3"
+        private const val version = "1.5.1"
 
         const val precompose = "moe.tlaster:precompose:$version"
         const val precomposeMolecule = "moe.tlaster:precompose-molecule:$version"

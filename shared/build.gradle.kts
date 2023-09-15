@@ -2,24 +2,14 @@ plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     id("com.android.library")
+    id("org.jetbrains.compose")
 
     kotlin("plugin.serialization") version Deps.Version.kotlin
     id("dev.icerock.mobile.multiplatform-resources")
-    id("org.jetbrains.compose")
-    id("com.squareup.sqldelight")
 }
 
-@OptIn(org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi::class)
 kotlin {
-    targetHierarchy.default()
-
-    android {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "17"
-            }
-        }
-    }
+    androidTarget()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -33,6 +23,7 @@ kotlin {
         framework {
             baseName = "shared"
             isStatic = true
+            export(Deps.Moko.Resources.commonMain_Resources)
         }
         extraSpecAttributes["resources"] = "['src/commonMain/resources/**', 'src/iosMain/resources/**']"
     }
@@ -42,9 +33,10 @@ kotlin {
             dependencies {
                 //put your multiplatform dependencies here
                 // Compose
+                implementation(compose.ui)
+                implementation(compose.runtime)
                 implementation(compose.animation)
                 implementation(compose.animationGraphics)
-                implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.materialIconsExtended)
@@ -53,9 +45,6 @@ kotlin {
 
                 // Compose View
                 implementation("com.moriatsushi.insetsx:insetsx:0.1.0-alpha10") // safe area protected insets
-                with(Deps.UI) {
-                    api(composeView)
-                }
 
                 // Resources
                 api(Deps.Moko.Resources.commonMain_Resources)
@@ -102,29 +91,25 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                //put your android dependencies here
+                dependsOn(commonMain)
                 // Compose
                 implementation(Deps.Android.appcompat)
                 implementation(Deps.Android.activityCompose)
-
-                // SQLDelight
-                implementation(Deps.Sqldelight.androidDriver)
-
                 // KTOR
                 implementation(Deps.Ktor.ktorAndroid)
-
                 // koin
                 implementation(Deps.Koin.android)
             }
         }
-        val iosMain by getting {
+        val iosX64Main by getting
+        val iosArm64Main by getting
+        val iosSimulatorArm64Main by getting
+        val iosMain by creating {
+            dependsOn(commonMain)
+            iosX64Main.dependsOn(this)
+            iosArm64Main.dependsOn(this)
+            iosSimulatorArm64Main.dependsOn(this)
             dependencies {
-                //put your ios dependencies here
-
-                // SQLDelight
-                implementation(Deps.Sqldelight.iosDriver)
-
-                // KTOR
                 implementation(Deps.Ktor.ktorIOS)
             }
         }
@@ -132,7 +117,7 @@ kotlin {
 }
 
 android {
-    namespace = "net.yuuzu.weatherapp"
+    namespace = Configurations.applicationId
     compileSdk = Configurations.compileSdk
     defaultConfig {
         minSdk = Configurations.minSdk

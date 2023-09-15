@@ -74,6 +74,8 @@ class SearchViewModel: ViewModel(), KoinComponent {
             SearchEvent.OnCompleted -> {
                 _state.update { it.copy(isCompleted = true, isLoading = false) }
             }
+
+            else -> {}
         }
     }
 
